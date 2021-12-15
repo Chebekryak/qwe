@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Выберите класс обучения:</h1>
+<div class="list-group" role="tablist">
+    {% for i in ["2", "3-4", "5-6", "7-8", "9-10"] %}
+    <a href="../test/{{i}}" class="list-group-item list-group-item-action">{{i}} класс</a>
+    {% endfor %}
+</div>
+{% endblock %}
