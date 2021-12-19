@@ -2,21 +2,23 @@
 
 {% block content %}
 <h1>Тест для {{_class}} класса:</h1>
-<form>
+<form method="post">
 {% for d in test %}
-    <div name="{{d['id']}}" style="margin: 2%">
-        <label><h4>{{loop.index}}.{{d["text"]}}</h4></label>
+    <div class="question">
+        <label><h4>{{loop.index}}. {{d["text"]}}</h4></label>
         {% if d["picture"] %}
         <br><img src="../static/{{d['picture']}}" alt="{{d['picture']}}">
         {% endif %}
+        {% set i = loop.index %}
         {% for answ in d["answers"] %}
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="exampleRadios" id="radio{{loop.index}}" value="option{{loop.index}}">
-            <label class="form-check-label" for="radio{{loop.index}}">{{answ}}</label>
+            {% set j = loop.index %}
+            <input class="form-check-input custom-radio" type="radio" name="{{i}}" id="radio{{j}}" value="{{answ}}">
+            <label class="form-check-label" for="radio{{j}}">{{answ}}</label>
         </div>
         {% endfor %}
     </div>
 {% endfor %}
+<button type="submit" class="btn btn-primary">Узнать результаты!</button>
 </form>
-<a href="/results" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Узнать результаты!</a>
 {% endblock %}

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Тут могли быть результаты</h1>
+<h1>Результат: {{"{:8.2f}".format(res)}}%</h1>
+<br><a href="/registration" class="btn btn-primary" role="button">Пройти тест еще раз!</a>
 {% endblock %}
