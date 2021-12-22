@@ -1,5 +1,9 @@
 from flask import Blueprint
 from flask import render_template, request
+import random
+
+from data import db_session
+from data.__all_models import *
 
 blueprint = Blueprint(
     'main_page', __name__,
@@ -20,22 +24,33 @@ def registration():
 
 @blueprint.route('/test/<string:_class>', methods=['GET', 'POST'])
 def test(_class):
-    test_test = [{"id": 1, "text": "текст", "picture": "images/1.png", "answers": ["1", "2", "3", "4", "5"],
-                  "right_answer": '1'},
-                 {"id": 2, "text": "тексттексттекстекст", "picture": None, "answers": ["a", "b", "c", "d", "e"],
-                 "right_answer": 'a'},
-                 {"id": 3, "text": "тексттекст", "picture": None, "answers": ["а", "б", "в", "г", "д"],
-                  "right_answer": 'а'}]
+    db_sess = db_session.create_session()
+    n = db_sess.query(Class).filter(Class.number == _class).first().id
+    try:
+        questions = random.sample((db_sess.query(Question).filter(Question.id_class == n).all()), k=3)
+        answers = db_sess.query(Answer).filter(Answer.id_question.in_(list(q.id for q in questions))).all()
+    except:
+        return render_template('registration.html', title="Выбор класса")
+    db_sess.commit()
     if request.method == 'GET':
-        return render_template('test.html', title="Тест", _class=_class, test=test_test)
+        return render_template('test.html', title="Тест", _class=_class, test=questions, answers=answers)
     elif request.method == 'POST':
-        c = 0
-        for i in range(1, len(test_test) + 1):
-            if request.form.get(f'{i}') == test_test[i - 1]["right_answer"]:
-                c += 1
-        return results(c / len(test_test) * 100)
+        right_answers = dict([(i.id_question, str(i.body)) for i in db_sess.query(Answer).
+                             filter(Answer.id_question.in_(list(q.id for q in questions))).filter(Answer.status).all()])
+        user_answers = []
+        for i in range(1, len(questions) + 1):
+            try:
+                user_answers.append(int(request.form.get(f'{i}')))
+            except:
+                continue
+        print(user_answers)
+        user_answers = dict([(i.id_question, str(i.body)) for i in db_sess.query(Answer).
+                            filter(Answer.id.in_(user_answers)).all()])
+        print(user_answers, right_answers)
+        return results(questions, user_answers, right_answers)
 
 
 @blueprint.route('/results/')
-def results(res):
-    return render_template('results.html', title="Результаты", res=res)
+def results(questions, user_answers, right_answers):
+    return render_template('results.html', title="Результаты",
+                           test=questions, user=user_answers, right=right_answers)

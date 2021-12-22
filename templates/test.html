@@ -5,16 +5,16 @@
 <form method="post">
 {% for d in test %}
     <div class="question">
-        <label><h4>{{loop.index}}. {{d["text"]}}</h4></label>
-        {% if d["picture"] %}
-        <br><img src="../static/{{d['picture']}}" alt="{{d['picture']}}">
+        <label><h4>{{loop.index}}. ({{d.points}}) {{d.text}}</h4></label>
+        {% if d.image %}
+        <br><img src="../static/{{d.image}}" alt="{{d.image}}">
         {% endif %}
         {% set i = loop.index %}
-        {% for answ in d["answers"] %}
+        {% for answ in answers if answ.id_question == d.id %}
         <div class="form-check">
             {% set j = loop.index %}
-            <input class="form-check-input custom-radio" type="radio" name="{{i}}" id="radio{{j}}" value="{{answ}}">
-            <label class="form-check-label" for="radio{{j}}">{{answ}}</label>
+            <input class="form-check-input custom-radio" type="radio" name="{{i}}" id="radio{{j}}" value="{{answ.id}}">
+            <label class="form-check-label" for="radio{{j}}">{{answ.body}}</label>
         </div>
         {% endfor %}
     </div>

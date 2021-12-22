@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Результат: {{"{:8.2f}".format(res)}}%</h1>
-<br><a href="/registration" class="btn btn-primary" role="button">Пройти тест еще раз!</a>
+<h1>Результаты:</h1>
+{% for d in test %}
+    <div class="question">
+        <label><h4>{{loop.index}}. ({{d.points}}) {{d.text}}</h4></label>
+        {% if d.image %}
+        <br><img src="../static/{{d.image}}" alt="{{d.image}}">
+        {% endif %}
+        <br><label>Ваш ответ: {{user[d.id]}}</label>
+        <br><label>Правильный ответ: {{right[d.id]}}</label>
+    </div>
+{% endfor %}
+<a href="/registration" class="btn btn-primary" role="button">Пройти тест еще раз!</a>
 {% endblock %}
