@@ -21,6 +21,10 @@ main {
     margin-bottom: 5%;
 }
 
+img {
+ height: 200px;
+}
+
 .question {
     background-color: white;
     margin-top: 2%;

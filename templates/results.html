@@ -2,6 +2,7 @@
 
 {% block content %}
 <h1>Результаты:</h1>
+{% set ns = namespace(a=0, b=0) %}
 {% for d in test %}
     <div class="question">
         <label><h4>{{loop.index}}. ({{d.points}}) {{d.text}}</h4></label>
@@ -10,7 +11,12 @@
         {% endif %}
         <br><label>Ваш ответ: {{user[d.id]}}</label>
         <br><label>Правильный ответ: {{right[d.id]}}</label>
+        {% set ns.b = ns.b + d.points %}
+        {% if user[d.id] == right[d.id] %}
+        {% set ns.a = ns.a + d.points %}
+        {% endif %}
     </div>
 {% endfor %}
+<h2>Вы набрали {{ns.a}} баллов из {{ns.b}}.</h2>
 <a href="/registration" class="btn btn-primary" role="button">Пройти тест еще раз!</a>
 {% endblock %}
