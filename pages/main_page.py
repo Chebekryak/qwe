@@ -11,6 +11,7 @@ blueprint = Blueprint(
     static_folder='static'
 )
 
+questions, answers = [], []
 
 @blueprint.route('/')
 def main_page():
@@ -24,17 +25,19 @@ def registration():
 
 @blueprint.route('/test/<string:_class>', methods=['GET', 'POST'])
 def test(_class):
-    db_sess = db_session.create_session()
-    n = db_sess.query(Class).filter(Class.number == _class).first().id
-    try:
-        questions = random.sample((db_sess.query(Question).filter(Question.id_class == n).all()), k=3)
-        answers = db_sess.query(Answer).filter(Answer.id_question.in_(list(q.id for q in questions))).all()
-    except:
-        return render_template('registration.html', title="Выбор класса")
-    db_sess.commit()
+    global questions, answers
     if request.method == 'GET':
+        db_sess = db_session.create_session()
+        n = db_sess.query(Class).filter(Class.number == _class).first().id
+        try:
+            questions = random.sample((db_sess.query(Question).filter(Question.id_class == n).all()), k=3)
+            answers = db_sess.query(Answer).filter(Answer.id_question.in_(list(q.id for q in questions))).all()
+        except:
+            return render_template('registration.html', title="Выбор класса")
+        db_sess.commit()
         return render_template('test.html', title="Тест", _class=_class, test=questions, answers=answers)
     elif request.method == 'POST':
+        db_sess = db_session.create_session()
         right_answers = dict([(i.id_question, str(i.body)) for i in db_sess.query(Answer).
                              filter(Answer.id_question.in_(list(q.id for q in questions))).filter(Answer.status).all()])
         user_answers = []
@@ -43,10 +46,9 @@ def test(_class):
                 user_answers.append(int(request.form.get(f'{i}')))
             except:
                 continue
-        print(user_answers)
         user_answers = dict([(i.id_question, str(i.body)) for i in db_sess.query(Answer).
                             filter(Answer.id.in_(user_answers)).all()])
-        print(user_answers, right_answers)
+        db_sess.commit()
         return results(questions, user_answers, right_answers)
 
 
