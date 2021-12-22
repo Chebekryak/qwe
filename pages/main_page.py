@@ -13,6 +13,7 @@ blueprint = Blueprint(
 
 questions, answers = [], []
 
+
 @blueprint.route('/')
 def main_page():
     return render_template('main.html', title="Главная")
@@ -30,7 +31,7 @@ def test(_class):
         db_sess = db_session.create_session()
         n = db_sess.query(Class).filter(Class.number == _class).first().id
         try:
-            questions = random.sample((db_sess.query(Question).filter(Question.id_class == n).all()), k=3)
+            questions = random.sample((db_sess.query(Question).filter(Question.id_class == n).all()), k=5)
             answers = db_sess.query(Answer).filter(Answer.id_question.in_(list(q.id for q in questions))).all()
         except:
             return render_template('registration.html', title="Выбор класса")
